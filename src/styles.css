@@ -1,14 +1,9 @@
-/* App-local styles. Mesh chrome (settings drawer, self-ref bar) is provided by
- * @baditaflorin/mesh-common/styles.css imported in main.tsx. */
-
 :root {
   color-scheme: dark;
 }
-
 * {
   box-sizing: border-box;
 }
-
 html,
 body,
 #root {
@@ -19,33 +14,37 @@ body,
   background: var(--mesh-bg);
   color: var(--mesh-fg);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-  -webkit-tap-highlight-color: transparent;
 }
 
-.feature-placeholder {
-  padding: 6rem 1.5rem 2rem;
-  text-align: center;
+.sx-targets {
   display: flex;
-  flex-direction: column;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.sx-path {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
   align-items: center;
-  gap: 1rem;
 }
-
-.feature-placeholder h1 {
-  font-size: 1.6rem;
-  margin: 0;
-  color: var(--mesh-accent);
+.sx-path li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
 }
-
-.feature-placeholder p {
-  max-width: 32rem;
-  margin: 0;
-  opacity: 0.85;
-  line-height: 1.5;
+.sx-node {
+  padding: 0.3rem 0.65rem;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  font-size: 0.92rem;
 }
-
-.feature-status {
-  font-size: 0.85rem;
-  opacity: 0.6;
-  font-variant-numeric: tabular-nums;
+.sx-path li.is-me .sx-node {
+  background: rgba(20, 184, 166, 0.22);
+  border: 1px solid var(--mesh-accent);
+}
+.sx-arrow {
+  opacity: 0.5;
 }
