@@ -18,7 +18,7 @@ test("two peers connect via paste; shortest path of length 2 with 1 degree", asy
 
     await a.locator(".mesh-qrx-payload summary").click();
     const payload = (await a.locator(".mesh-qrx-payload code").textContent()) ?? "";
-    await b.getByPlaceholder("or paste a mesh:// payload").fill(payload);
+    await b.getByPlaceholder("or paste a payload (URL or mesh://)").fill(payload);
     await b.getByRole("button", { name: "use", exact: true }).click();
 
     await a.getByRole("button", { name: /set me as start/ }).click();
