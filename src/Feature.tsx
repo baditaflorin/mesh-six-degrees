@@ -75,6 +75,14 @@ function Body({ room, config }: { room: YRoom; config: MeshConfig }) {
 
   const setStart = () => targets.set("start", room.peerId);
   const setGoal = () => targets.set("goal", room.peerId);
+  const pickStart = (peerId: string) => {
+    if (peerId) targets.set("start", peerId);
+    else targets.delete("start");
+  };
+  const pickGoal = (peerId: string) => {
+    if (peerId) targets.set("goal", peerId);
+    else targets.delete("goal");
+  };
 
   const start = targets.get("start") ?? null;
   const goal = targets.get("goal") ?? null;
@@ -82,8 +90,17 @@ function Body({ room, config }: { room: YRoom; config: MeshConfig }) {
 
   const myPayload = makeScanPayload(room.roomId, room.peerId, name.trim() || "anon");
 
-  const knownPeers: string[] = [];
-  names.forEach((_v, k) => knownPeers.push(k));
+  // Every peer that appears in the graph (named, or referenced by any edge) is
+  // a valid endpoint — not just the local peer. This is what makes "shortest
+  // path between ANY two people" true rather than "path from/to me".
+  const peerSet = new Set<string>();
+  names.forEach((_v, k) => peerSet.add(k));
+  for (const e of edgeList) {
+    peerSet.add(e.from);
+    peerSet.add(e.to);
+  }
+  const knownPeers: string[] = [...peerSet];
+  const labelOf = (peerId: string) => names.get(peerId) ?? peerId.slice(0, 6);
 
   return (
     <div className="viral-screen">
@@ -120,9 +137,45 @@ function Body({ room, config }: { room: YRoom; config: MeshConfig }) {
             🅱 set me as goal
           </button>
         </div>
+        <div className="sx-pickers">
+          <label>
+            🅰 start
+            <select
+              className="sx-pick-start"
+              aria-label="start endpoint"
+              value={start ?? ""}
+              onChange={(e) => pickStart(e.target.value)}
+            >
+              <option value="">— anyone —</option>
+              {knownPeers.map((p) => (
+                <option key={p} value={p}>
+                  {labelOf(p)}
+                  {p === room.peerId ? " (you)" : ""}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            🅱 goal
+            <select
+              className="sx-pick-goal"
+              aria-label="goal endpoint"
+              value={goal ?? ""}
+              onChange={(e) => pickGoal(e.target.value)}
+            >
+              <option value="">— anyone —</option>
+              {knownPeers.map((p) => (
+                <option key={p} value={p}>
+                  {labelOf(p)}
+                  {p === room.peerId ? " (you)" : ""}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
         <p className="viral-status" style={{ marginTop: "0.4rem" }}>
-          start: <strong>{start ? (names.get(start) ?? start.slice(0, 6)) : "—"}</strong> · goal:{" "}
-          <strong>{goal ? (names.get(goal) ?? goal.slice(0, 6)) : "—"}</strong>
+          start: <strong>{start ? labelOf(start) : "—"}</strong> · goal:{" "}
+          <strong>{goal ? labelOf(goal) : "—"}</strong>
         </p>
       </section>
 
